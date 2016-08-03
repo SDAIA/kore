@@ -51,6 +51,13 @@ ifneq ("$(PGSQL)", "")
 	    -DPGSQL_INCLUDE_PATH="\"$(shell pg_config --includedir)\""
 endif
 
+ifneq ("$(MYSQL)", "")
+    S_SRC+=src/mysql.c
+    LDFLAGS+=-L$(shell mysql_config --libs)
+    CFLAGS+=-I$(shell mysql_config --cflags) -DKORE_USE_MYSQL \
+        -DMYSQL_INCLUDE_PATH="\"$(shell mysql_config --include)\""
+endif
+
 ifneq ("$(TASKS)", "")
 	S_SRC+=src/tasks.c
 	LDFLAGS+=-lpthread
