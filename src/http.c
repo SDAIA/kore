@@ -27,8 +27,12 @@
 #include "kore.h"
 #include "http.h"
 
-#if defined(KORE_USE_PGSQL)
+/*#if defined(KORE_USE_PGSQL)
 #include "pgsql.h"
+#endif*/ //Deprecated
+
+#if defined(KORE_USE_SQL)
+#include "sql.h"
 #endif
 
 #if defined(KORE_USE_TASKS)
@@ -228,8 +232,12 @@ http_request_new(struct connection *c, const char *host,
 	LIST_INIT(&(req->tasks));
 #endif
 
-#if defined(KORE_USE_PGSQL)
+/*#if defined(KORE_USE_PGSQL)
 	LIST_INIT(&(req->pgsqls));
+#endif*/ //Deprecated
+    
+#if defined(KORE_USE_SQL)
+    LIST_INIT(&(req->sqls));
 #endif
 
 	http_request_count++;
@@ -376,9 +384,15 @@ http_request_free(struct http_request *req)
 	struct kore_task	*t, *nt;
 	int			pending_tasks;
 #endif
-#if defined(KORE_USE_PGSQL)
+
+/*#if defined(KORE_USE_PGSQL)
 	struct kore_pgsql	*pgsql;
+#endif*/ //Deprecated
+    
+#if defined(KORE_USE_SQL)
+    struct kore_sql *sql;
 #endif
+    
 	struct http_file	*f, *fnext;
 	struct http_arg		*q, *qnext;
 	struct http_header	*hdr, *next;
@@ -400,7 +414,7 @@ http_request_free(struct http_request *req)
 	}
 #endif
 
-#if defined(KORE_USE_PGSQL)
+/*#if defined(KORE_USE_PGSQL)
 	while (!LIST_EMPTY(&(req->pgsqls))) {
 		pgsql = LIST_FIRST(&(req->pgsqls));
 		kore_pgsql_cleanup(pgsql);
@@ -408,6 +422,16 @@ http_request_free(struct http_request *req)
 
 	if (req->flags & HTTP_REQUEST_PGSQL_QUEUE)
 		kore_pgsql_queue_remove(req);
+#endif*/ //Deprecated
+
+#if defined(KORE_USE_SQL)
+    while (!LIST_EMPTY(&(req->sqls))) {
+        sql = LIST_FIRST(&(req->sqls));
+        kore_sql_cleanup(sql);
+    }
+    
+    if (req->flags & HTTP_REQUEST_SQL_QUEUE)
+        kore_sql_queue_remove(req);
 #endif
 
 	kore_debug("http_request_free: %p->%p", req->owner, req);

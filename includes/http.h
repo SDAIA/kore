@@ -153,7 +153,8 @@ struct http_file {
 #define HTTP_REQUEST_COMPLETE		0x0001
 #define HTTP_REQUEST_DELETE		0x0002
 #define HTTP_REQUEST_SLEEPING		0x0004
-#define HTTP_REQUEST_PGSQL_QUEUE	0x0010
+//#define HTTP_REQUEST_PGSQL_QUEUE 0x0010 //Deprecated
+#define HTTP_REQUEST_SQL_QUEUE	0x0010
 #define HTTP_REQUEST_EXPECT_BODY	0x0020
 #define HTTP_REQUEST_RETAIN_EXTRA	0x0040
 #define HTTP_REQUEST_NO_CONTENT_LENGTH	0x0080
@@ -184,8 +185,8 @@ struct http_request {
 	struct kore_module_handle	*hdlr;
 
 	LIST_HEAD(, kore_task)		tasks;
-	LIST_HEAD(, kore_pgsql)		pgsqls;
-    LIST_HEAD(, kore_mysql)     mysqls;
+	//LIST_HEAD(, kore_pgsql)		pgsqls; //Deprecated
+    LIST_HEAD(, kore_sql)       sqls;
 
 	TAILQ_HEAD(, http_header)	req_headers;
 	TAILQ_HEAD(, http_header)	resp_headers;
