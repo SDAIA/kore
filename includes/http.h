@@ -185,6 +185,7 @@ struct http_request {
 
 	LIST_HEAD(, kore_task)		tasks;
 	LIST_HEAD(, kore_pgsql)		pgsqls;
+    LIST_HEAD(, kore_mysql)     mysqls;
 
 	TAILQ_HEAD(, http_header)	req_headers;
 	TAILQ_HEAD(, http_header)	resp_headers;
