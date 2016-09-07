@@ -67,6 +67,8 @@ u_int16_t				mysql_conn_max = MYSQL_CONN_MAX;
 void
 kore_mysql_init(void)
 {
+	//Start library
+	mysql_library_init();
 	mysql_conn_count = 0;
 	TAILQ_INIT(&mysql_conn_free);
 	TAILQ_INIT(&mysql_wait_queue);
@@ -483,7 +485,9 @@ mysql_conn_create(struct kore_mysql *mysql, struct mysql_db *db)
 	conn = kore_malloc(sizeof(*conn));
 	kore_debug("mysql_conn_create(): %p", conn);
 
-	conn->db = PQconnectdb(db->conn_string);
+	//conn->db = PQconnectdb(db->conn_string);
+	conn->db = mysql_init(NULL);
+
 	if (conn->db == NULL || (PQstatus(conn->db) != CONNECTION_OK)) {
 		mysql_set_error(mysql, PQerrorMessage(conn->db));
 		mysql_conn_cleanup(conn);
@@ -547,14 +551,14 @@ mysql_conn_cleanup(struct mysql_conn *conn)
 		http_request_wakeup(req);
 
 		mysql->conn = NULL;
-		mysql_set_error(mysql, PQerrorMessage(conn->db));
+		mysql_set_error(mysql, mysql_error(conn->db));
 
 		kore_pool_put(&mysql_job_pool, conn->job);
 		conn->job = NULL;
 	}
 
 	if (conn->db != NULL)
-		PQfinish(conn->db);
+		mysql_close(conn->db);
 
 	mysql_conn_count--;
 	kore_free(conn->name);
@@ -564,12 +568,12 @@ mysql_conn_cleanup(struct mysql_conn *conn)
 static void
 mysql_read_result(struct kore_mysql *mysql)
 {
-	if (PQisBusy(mysql->conn->db)) {
+	if (mysql_ping(mysql->conn->db) != 0) {
 		mysql->state = KORE_MYSQL_STATE_WAIT;
 		return;
 	}
 
-	mysql->result = PQgetResult(mysql->conn->db);
+	mysql->result = mysql_store_result(mysql->conn->db);
 	if (mysql->result == NULL) {
 		mysql->state = KORE_MYSQL_STATE_DONE;
 		return;
