@@ -50,7 +50,6 @@
 #define WAIT_ANY		(-1)
 #endif
 
-#define KORE_SHM_KEY		15000
 #define WORKER_LOCK_TIMEOUT	500
 
 #define WORKER(id)						\
@@ -318,6 +317,8 @@ kore_worker_entry(struct kore_worker *kw)
 	had_lock = 0;
 	next_lock = 0;
 	idle_check = 0;
+	worker_active_connections = 0;
+
 	kore_platform_event_init();
 	kore_msg_worker_init();
 
@@ -361,6 +362,8 @@ kore_worker_entry(struct kore_worker *kw)
 
 		now = kore_time_ms();
 		netwait = kore_timer_run(now);
+		if (netwait > 100)
+			netwait = 100;
 
 		if (now > next_lock) {
 			if (kore_worker_acceptlock_obtain()) {
