@@ -18,31 +18,32 @@
 #ifndef _H_KORE_PGSQL_STRUCTS
 #define _H_KORE_PGSQL_STRUCTS
 
-#include <libpq-fe.h>
+#include <my_config.h>
+#include <mysql.h>
 #include "sql.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-typedef struct PGSQLconn {
-  SQLconn       super;
-	PGconn				*db;
-} PGSQLconn;
+typedef struct MYSQLconn {
+  SQLconn     super;
+	MYSQL				*db;
+} MYSQLconn;
 
-typedef struct PGSQLdb {
+typedef struct MYSQLdb {
   SQLdb     super;
 	char			*name;
 	char			*conn_string;
-} PGSQLdb;
+} MYSQLdb;
 
-typedef struct PGSQLKore {
+typedef struct MYSQLKore {
 	SQLKore     super;
-	PGresult		*result;
-} PGSQLKore;
+	MYSQL_RES		*result;
+} MYSQLKore;
 
 // TODO Same as sql.h comment.
-extern u_int16_t	pgsql_conn_max;
+extern u_int16_t	mysql_conn_max;
 
 #if defined(__cplusplus)
 }
