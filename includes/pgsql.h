@@ -1,3 +1,4 @@
+// DEPRECATED if sql_unite works.
 /*
  * Copyright (c) 2014 Joris Vink <joris@coders.se>
  *
