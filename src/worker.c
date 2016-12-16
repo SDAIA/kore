@@ -32,8 +32,14 @@
 #include "http.h"
 #endif
 
-#if defined(KORE_USE_PGSQL)
-#include "pgsql.h"
+#if defined(KORE_USE_SQL)
+#include "sql.h"
+	#if defined(KORE_USE_PGSQL)
+	#include "pgsql_structs.h"
+	#endif
+	#if defined(KORE_USE_MYSQL)
+	#include "mysql_structs.h"
+	#endif
 #endif
 
 #if defined(KORE_USE_TASKS)

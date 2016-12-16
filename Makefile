@@ -44,6 +44,11 @@ ifneq ("$(NOTLS)", "")
 	endif
 endif
 
+ifneq ("$(SQL)", "")
+	S_SRC+=src/sql.c
+	CFLAGS+=-DKORE_USE_PGSQL
+endif
+
 ifneq ("$(PGSQL)", "")
 	S_SRC+=src/pgsql.c
 	LDFLAGS+=-L$(shell pg_config --libdir) -lpq
